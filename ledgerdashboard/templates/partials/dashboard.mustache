@@ -1,5 +1,5 @@
 <div class="row">
-    <div class="col-md-3">
+    <div class="col-md-4">
         <h2>Accounts</h2>
         <table id="balance" class="table table-bordered table-striped">
             <thead>
@@ -74,7 +74,7 @@
     <div class="col-md-4">
         <h2>Expenses this month</h2>
         {{#expenses_present}}
-        <table id="budget" class="table table-bordered table-striped">
+        <table id="expenses_this_month" class="table table-bordered table-striped">
             <thead>
                 <tr>
                     <th>Account</th>
@@ -113,8 +113,30 @@
         </table>
     </div>
     <div class="col-md-4">
+        <h2>Budget this month</h2>
+        {{#budget_present}}
+            <table id="budget_this_month" class="table table-bordered table-striped">
+		<thead>
+                    <tr>
+			<th>Account</th>
+			<th>Balance</th>
+                    </tr>
+		</thead>
+		<tbody>
+                    {{#budget_balances}}
+			<tr>
+			    <td>{{#first}}<strong>{{/first}}{{{name}}}{{#first}}</strong>{{/first}}</td>
+			    <td class="amount">{{#first}}<strong>{{/first}}{{balance}}{{#first}}</strong>{{/first}}</td>
+			</tr>
+                    {{/budget_balances}}
+		</tbody>
+            </table>
+        {{/budget_present}}
+        {{^budget_present}}
+            <div class="alert alert-info"> No budget yet for this month</div>
+        {{/budget_present}}
         <h2>Recent expenses</h2>
-        <table id="budget" class="table table-bordered table-striped">
+        <table id="recent_expenses" class="table table-bordered table-striped">
             <thead>
                 <tr>
                     <th>Name</th>
@@ -130,33 +152,6 @@
             {{/last_expenses}}
             </tbody>
         </table>
-
-        <h2>Pending recurring expenses</h2>
-        <table id="recurring_expenses" class="table table-bordered table-striped">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Amount</th>
-                    <th>Due in about</th>
-                </tr>
-            </thead>
-            <tbody>
-                {{#recurring_transactions}}
-                    <tr>
-                        <td>{{payee}}</td>
-                        <td class="amount">{{amount}}</td>
-                        <td>{{due_in}} days</td>
-                    </tr>
-                {{/recurring_transactions}}
-                <tr>
-                    <td>
-                        <strong>Total:</strong>
-                    </td>
-                    <td class="amount"><strong>{{recurring_transactions_total}}</strong></td>
-                    <td></td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+   </div>
 </div>
 

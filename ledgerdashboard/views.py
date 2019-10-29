@@ -34,13 +34,23 @@ def index():
     layout.current_date = current_date()
 
     layout.accounts = [
-        {"name": format_account(account), 'balance': format_amount(balance)}
+        {"name": format_account(account), 'balance': format_amount(balance,10)}
         for account, cur, balance in l.balance(accounts=s.Accounts.ASSETS_PATTERN)
     ]
 
     layout.debts = [
-        {"name": format_account(account), 'balance': format_amount(float(balance) * -1)}
+        {"name": format_account(account), 'balance': format_amount(float(balance) * -1,10)}
         for account, cur, balance in l.balance(accounts=s.Accounts.LIABILITIES_PATTERN)
+    ]
+
+    layout.budget_balances = [
+        {
+            "name": format_account(account),
+            'balance': format_amount(balance),
+            "first": account == s.Accounts.BUDGET_PATTERN
+        }
+        for account, cur, balance
+        in l.balance(accounts=s.Accounts.BUDGET_PATTERN, limit="date >= [{}]".format(current_date().strftime("%B")))
     ]
 
     layout.expense_balances = [
@@ -191,9 +201,9 @@ def api_payee():
     return json.dumps(sorted(payees)), 200, {"Content-Type": "application/json"}
 
 
-def format_amount(amount, width=5):
-    width += 3
-    return ("€{: >"+str(width)+".2f}").format(float(amount))
+def format_amount(amount, width=6):
+    return ("JPY {: >"+str(width)+"}").format("{:,.0f}".format(float(amount)))
+    #return ("JPY {:,>}".format(float(amount)))
 
 
 def format_account(account):

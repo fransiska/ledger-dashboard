@@ -33,6 +33,11 @@ class Dashboard(Layout):
         except AttributeError:
             return False
 
+    def budget_present(self):
+        try:
+            return len(self.budget_balances) > 0
+        except AttributeError:
+            return False
 
 class Expenses(Layout):
     def __init__(self, form_data=None):

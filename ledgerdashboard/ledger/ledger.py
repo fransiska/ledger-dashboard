@@ -41,7 +41,7 @@ class Ledger:
                 continue
             match = pattern.search(balance)
             if match:
-                balances.append((match.group(1), match.group(2), float(match.group(3))))
+                balances.append((match.group(1), match.group(2), float(match.group(3).replace(',',''))))
 
         return balances
 
