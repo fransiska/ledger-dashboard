@@ -63,7 +63,7 @@ def index():
         in l.balance(accounts=s.Accounts.EXPENSES_PATTERN, limit="date >= [{}]".format(current_date().strftime("%B")))
     ]
 
-    previous_month = current_datetime() - relativedelta(month=1)
+    previous_month = current_datetime() - datetime.timedelta(days=28)
 
     layout.expenses_previous_month = [
         {"name": format_account(account), 'balance': format_amount(balance), "first": ":" not in account}
@@ -94,7 +94,7 @@ def index():
     layout.unbudgeted = [
         {'payee': txn['payee'], 'note': txn['note'], 'amount': format_amount(txn['amount'])}
         for txn
-        in l.register(accounts=s.Accounts.UNBUDGETED_PATTERN)[:-15:-1]
+        in l.register(accounts=s.Accounts.UNBUDGETED_PATTERN, limit="date >= [{}]".format(current_date().strftime("%B")))[:-15:-1]
     ]
 
     recurring_transactions = ledger.find_recurring_transactions(l.register(accounts=s.Accounts.EXPENSES_PATTERN),
