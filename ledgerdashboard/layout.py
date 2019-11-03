@@ -39,6 +39,12 @@ class Dashboard(Layout):
         except AttributeError:
             return False
 
+    def unbudgeted_present(self):
+        try:
+            return len(self.unbudgeted) > 0
+        except AttributeError:
+            return False
+
 class Expenses(Layout):
     def __init__(self, form_data=None):
         if form_data:

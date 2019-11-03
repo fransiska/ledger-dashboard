@@ -82,13 +82,19 @@ def index():
     layout.income = [
         {"name": format_account(txn['payee']), 'balance': format_amount(float(txn['amount']) * -1)}
         for txn
-        in recurring_income
+        in l.register(accounts=s.Accounts.INCOME_PATTERN, limit="date >= [{}]".format(current_date().strftime("%B")))
     ]
 
     layout.last_expenses = [
         {'payee': txn['payee'], 'note': txn['note'], 'amount': format_amount(txn['amount'])}
         for txn
         in l.register(accounts=s.Accounts.EXPENSES_PATTERN)[:-15:-1]
+    ]
+
+    layout.unbudgeted = [
+        {'payee': txn['payee'], 'note': txn['note'], 'amount': format_amount(txn['amount'])}
+        for txn
+        in l.register(accounts=s.Accounts.UNBUDGETED_PATTERN)[:-15:-1]
     ]
 
     recurring_transactions = ledger.find_recurring_transactions(l.register(accounts=s.Accounts.EXPENSES_PATTERN),
