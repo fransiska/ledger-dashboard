@@ -19,28 +19,25 @@ l = ledger.Ledger.new(filename=settings.LEDGER_FILE)
 ledger_writer = ledger.LedgerWriter(settings.LEDGER_FILE)
 
 
-def current_date():
-    return datetime.date.today()
-
-
-def current_datetime():
-    return datetime.datetime.now()
-
+@app.route("/<int:year>/<int:month>")
+def index_date(year,month,*args):
+    return index(datetime.date(year+1 if month == 12 else year, 1 if month == 12 else month+1, 1) - datetime.timedelta(days=1))
 
 @app.route("/")
-def index():
-
+def index(date = None):
     layout = Dashboard()
-    layout.current_date = current_date()
+    layout.current_date = date if date else datetime.date.today()
+    layout.current_datetime = datetime.datetime.combine(layout.current_date, datetime.datetime.max.time())
+    next_month = layout.current_datetime + relativedelta(months=1)
 
     layout.accounts = [
         {"name": format_account(account), 'balance': format_amount(balance,10)}
-        for account, cur, balance in l.balance(accounts=s.Accounts.ASSETS_PATTERN)
+        for account, cur, balance in l.balance(accounts=s.Accounts.ASSETS_PATTERN, limit="date <= [{}]".format(next_month.strftime("%B")))
     ]
 
     layout.debts = [
         {"name": format_account(account), 'balance': format_amount(float(balance) * -1,10)}
-        for account, cur, balance in l.balance(accounts=s.Accounts.LIABILITIES_PATTERN)
+        for account, cur, balance in l.balance(accounts=s.Accounts.LIABILITIES_PATTERN, limit="date <= [{}]".format(next_month.strftime("%B")))
     ]
 
     layout.budget_balances = [
@@ -50,85 +47,42 @@ def index():
             "first": account == s.Accounts.BUDGET_PATTERN
         }
         for account, cur, balance
-        in l.balance(accounts=s.Accounts.BUDGET_PATTERN, limit="date >= [{}]".format(current_date().strftime("%B")))
+        in l.balance(accounts=s.Accounts.BUDGET_PATTERN, limit="date >= [{}] and date < [{}]".format(layout.current_date.strftime("%B %Y"),next_month.strftime("%B %Y")))
     ]
 
     layout.expense_balances = [
         {
             "name": format_account(account),
-            'balance': format_amount(balance),
+            'balance': format_amount(balance,9),
             "first": account == s.Accounts.EXPENSES_PATTERN
         }
         for account, cur, balance
-        in l.balance(accounts=s.Accounts.EXPENSES_PATTERN, limit="date >= [{}]".format(current_date().strftime("%B")))
+        in l.balance(accounts=s.Accounts.EXPENSES_PATTERN, limit="date >= [{}] and date < [{}]".format(layout.current_date.strftime("%B %Y"),next_month.strftime("%B %Y")))
     ]
-
-    previous_month = current_datetime() - datetime.timedelta(days=28)
-
-    layout.expenses_previous_month = [
-        {"name": format_account(account), 'balance': format_amount(balance), "first": ":" not in account}
-        for account, cur, balance
-        in l.balance(accounts=s.Accounts.EXPENSES_PATTERN, limit="date >= [{}] and date < [{}]".format(
-            previous_month.strftime("%B %Y"),
-            current_date().strftime("%B %Y")
-        ))
-    ]
-
-    recurring_income = ledger.find_recurring_transactions(
-        l.register(accounts=s.Accounts.INCOME_PATTERN),
-        current_datetime()
-    )
 
     layout.income = [
-        {"name": format_account(txn['payee']), 'balance': format_amount(float(txn['amount']) * -1)}
+        {"name": format_account(txn['payee']), 'balance': format_amount(float(txn['amount']) * -1,9)}
         for txn
-        in l.register(accounts=s.Accounts.INCOME_PATTERN, limit="date >= [{}]".format(current_date().strftime("%B")))
+        in l.register(accounts=s.Accounts.INCOME_PATTERN, limit="date >= [{}] and date < [{}]".format(layout.current_date.strftime("%B %Y"),next_month.strftime("%B %Y")))
     ]
 
     layout.last_expenses = [
         {'payee': txn['payee'], 'note': txn['note'], 'amount': format_amount(txn['amount'])}
         for txn
-        in l.register(accounts=s.Accounts.EXPENSES_PATTERN)[:-15:-1]
+        in l.register(accounts=s.Accounts.EXPENSES_PATTERN, limit="date >= [{}] and date < [{}]".format(layout.current_date.strftime("%B %Y"),next_month.strftime("%B %Y")))[:-15:-1]
     ]
 
     layout.unbudgeted = [
         {'payee': txn['payee'], 'note': txn['note'], 'amount': format_amount(txn['amount'])}
         for txn
-        in l.register(accounts=s.Accounts.UNBUDGETED_PATTERN, limit="date >= [{}]".format(current_date().strftime("%B")))[:-15:-1]
+        in l.register(accounts=s.Accounts.UNBUDGETED_PATTERN, limit="date >= [{}] and date < [{}]".format(layout.current_date.strftime("%B %Y"),next_month.strftime("%B %Y")))[:-15:-1]
     ]
 
-    recurring_transactions = ledger.find_recurring_transactions(l.register(accounts=s.Accounts.EXPENSES_PATTERN),
-                                                                current_datetime())
-    transactions_this_month = l.register(accounts=s.Accounts.EXPENSES_PATTERN,
-                                         limit='date >= [{}]'.format(current_date().strftime("%B")))
-
-    for txn in recurring_transactions:
-        txn['date'] = current_datetime().strptime(txn['date'], '%Y/%m/%d')
-
-    # unpayed_transactions = get_unmatched_txns(recurring_transactions, transactions_this_month)
-
-    total = float(0)
-    for txn in recurring_transactions:
-        total += float(txn['amount'])
-
-    recurring_transactions = [
-        {
-            "payee": txn['payee'],
-            "due_in": days_until_next_transaction(txn['date']),
-            "amount": format_amount(txn['amount'], width=3)
-        } for txn
-        in recurring_transactions  # unpayed_transactions
-    ]
-
-    layout.recurring_transactions = sorted(recurring_transactions, key=lambda item: item['due_in'])
-
-    layout.recurring_transactions_total = format_amount(total)
-
-    current_month = current_date().month
+    current_month = layout.current_date.month
 
     flow = []
     for i in range(current_month - 3, current_month + 1):
-        start_year = end_year = current_date().year
+        start_year = end_year = layout.current_date.year
         start_month_nr = i % 12
         end_month_nr = (i + 1) % 12
 
@@ -219,14 +173,14 @@ def format_account(account):
     return ("&nbsp;" * 4) + ":".join(account.split(":")[1:])
 
 
-def days_until_next_transaction(txn_date: datetime.date):
+def days_until_next_transaction(txn_date: datetime.date, current_datetime):
     """
     Calculates the number of days until the next transaction (occurring next month)
     :param txn_date: datetime.date
     :return: int
     """
 
-    return (txn_date + relativedelta(months=1) - current_datetime()).days
+    return (txn_date + relativedelta(months=1) - current_datetime).days
 
 
 def get_unmatched_txns(haystack, needles):
