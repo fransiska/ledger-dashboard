@@ -27,3 +27,8 @@ class Accounts:
     LIABILITIES = "liabilities"
     LIABILITIES_PATTERN = "^Liabilities"
 
+    BUDGET = "budget"
+    BUDGET_PATTERN = "^Budget"
+
+    UNBUDGETED = "unbudgeted"
+    UNBUDGETED_PATTERN = "^Budget:Unbudgeted and not payee Budget -n"
