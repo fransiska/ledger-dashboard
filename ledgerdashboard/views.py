@@ -61,9 +61,13 @@ def index(date = None):
     ]
 
     layout.income = [
-        {"name": format_account(txn['payee']), 'balance': format_amount(float(txn['amount']) * -1,9)}
-        for txn
-        in l.register(accounts=s.Accounts.INCOME_PATTERN, limit="date >= [{}] and date < [{}]".format(layout.current_date.strftime("%B %Y"),next_month.strftime("%B %Y")))
+        {
+            "name": format_account(account),
+            'balance': format_amount(balance,9),
+            "first": account == s.Accounts.INCOME_PATTERN
+        }
+        for account, cur, balance
+        in l.balance(accounts=s.Accounts.INCOME_PATTERN, limit="date >= [{}] and date < [{}]".format(layout.current_date.strftime("%B %Y"),next_month.strftime("%B %Y")))
     ]
 
     layout.last_expenses = [

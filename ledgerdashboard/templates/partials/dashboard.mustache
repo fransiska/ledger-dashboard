@@ -19,19 +19,19 @@
         </table>
 
         <h2>Income this month</h2>
-        <table id="income" class="table table-bordered table-striped">
+        <table id="balance" class="table table-bordered table-striped">
             <thead>
-            <tr>
-                <th>Payed By</th>
-                <th>Amount</th>
-            </tr>
+                <tr>
+                    <th>Account</th>
+                    <th>Balance</th>
+                </tr>
             </thead>
             <tbody>
                 {{#income}}
-                <tr>
-                    <td>{{{name}}}</td>
-                    <td class="amount">{{balance}}</td>
-                </tr>
+                    <tr>
+			<td>{{{name}}}</td>
+			<td class="amount">{{balance}}</td>
+                    </tr>
                 {{/income}}
             </tbody>
         </table>
