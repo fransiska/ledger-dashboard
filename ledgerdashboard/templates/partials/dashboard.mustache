@@ -18,6 +18,65 @@
             </tbody>
         </table>
 
+        <h2>Liabilities</h2>
+        <table id="balance" class="table table-bordered table-striped">
+            <thead>
+		<tr>
+                    <th>Account</th>
+                    <th>Balance</th>
+		</tr>
+            </thead>
+            <tbody>
+		{{#debts}}
+                    <tr>
+			<td>{{{name}}}</td>
+			<td class="amount negative">{{balance}}</td>
+                    </tr>
+		{{/debts}}
+            </tbody>
+        </table>
+
+        <h2>Net worth</h2>
+        <table id="net_worth" class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Month</th>
+                    <th>Amount</th>
+                </tr>
+            </thead>
+            {{#net_worth}}
+                <tr>
+                    <td>{{month}}</td>
+                    <td class="amount {{type}}">{{amount}}</td>
+                </tr>
+            {{/net_worth}}
+        </table>
+
+    </div>
+
+    <div class="col-md-4">
+        <h2>Expenses this month</h2>
+        {{#expenses_present}}
+            <table id="expenses_this_month" class="table table-bordered table-striped">
+		<thead>
+                    <tr>
+			<th>Account</th>
+			<th>Balance</th>
+                    </tr>
+		</thead>
+		<tbody>
+                    {{#expense_balances}}
+			<tr>
+			    <td>{{#first}}<strong>{{/first}}{{{name}}}{{#first}}</strong>{{/first}}</td>
+			    <td class="amount">{{#first}}<strong>{{/first}}{{balance}}{{#first}}</strong>{{/first}}</td>
+			</tr>
+                    {{/expense_balances}}
+		</tbody>
+            </table>
+        {{/expenses_present}}
+        {{^expenses_present}}
+            <div class="alert alert-info"> No expenses yet for this month</div>
+        {{/expenses_present}}
         <h2>Income this month</h2>
         <table id="balance" class="table table-bordered table-striped">
             <thead>
@@ -36,24 +95,6 @@
             </tbody>
         </table>
 
-        <h2>Liabilities</h2>
-        <table id="balance" class="table table-bordered table-striped">
-            <thead>
-            <tr>
-                <th>Account</th>
-                <th>Balance</th>
-            </tr>
-            </thead>
-            <tbody>
-            {{#debts}}
-                <tr>
-                    <td>{{{name}}}</td>
-                    <td class="amount negative">{{balance}}</td>
-                </tr>
-            {{/debts}}
-            </tbody>
-        </table>
-
         <h2>Cash flow</h2>
         <table id="cashflow" class="table table-bordered table-striped">
             <thead>
@@ -69,31 +110,6 @@
                 </tr>
             {{/cash_flow}}
         </table>
-    </div>
-
-    <div class="col-md-4">
-        <h2>Expenses this month</h2>
-        {{#expenses_present}}
-        <table id="expenses_this_month" class="table table-bordered table-striped">
-            <thead>
-                <tr>
-                    <th>Account</th>
-                    <th>Balance</th>
-                </tr>
-            </thead>
-            <tbody>
-                {{#expense_balances}}
-                <tr>
-                    <td>{{#first}}<strong>{{/first}}{{{name}}}{{#first}}</strong>{{/first}}</td>
-                    <td class="amount">{{#first}}<strong>{{/first}}{{balance}}{{#first}}</strong>{{/first}}</td>
-                </tr>
-                {{/expense_balances}}
-            </tbody>
-        </table>
-        {{/expenses_present}}
-        {{^expenses_present}}
-            <div class="alert alert-info"> No expenses yet for this month</div>
-        {{/expenses_present}}
     </div>
     <div class="col-md-4">
         <h2>Budget this month</h2>

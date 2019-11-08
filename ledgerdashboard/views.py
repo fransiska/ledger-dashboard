@@ -85,6 +85,8 @@ def index(date = None):
     current_month = layout.current_date.month
 
     flow = []
+    net_worth = []
+
     for i in range(current_month - 3, current_month + 1):
         start_year = end_year = layout.current_date.year
         start_month_nr = i % 12
@@ -95,6 +97,23 @@ def index(date = None):
             start_year -= 1
         if i > 11:
             end_year += 1
+
+        result = [
+            {
+                "name": format_account(account),
+                'balance': format_amount(balance,9),
+                "first": account == s.Accounts.INCOME_PATTERN
+            }
+            for account, cur, balance
+            in l.balance(accounts=" ".join([s.Accounts.LIABILITIES_PATTERN, s.Accounts.ASSETS_PATTERN,"-n"]), limit="date < [{} {}]".format(months[end_month_nr], end_year))
+        ]
+
+        amount = sum([int(res["balance"].split()[1].replace(",","")) for res in result])
+        net_worth.append({
+            'month': months[start_month_nr],
+            'amount': format_amount(amount),
+            'type': "negative" if amount < 0 else "positive"
+        })
 
         result = l.register(
             accounts=" ".join([s.Accounts.EXPENSES_PATTERN, s.Accounts.INCOME_PATTERN]),
@@ -112,6 +131,7 @@ def index(date = None):
         })
 
     layout.cash_flow = flow
+    layout.net_worth = net_worth
 
     return renderer.render(layout)
 
