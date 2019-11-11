@@ -84,6 +84,14 @@ def index(date = None):
 
     current_month = layout.current_date.month
 
+    # Date
+    reg = [txn['date'] for txn in l.register(accounts="")]
+    layout.starting_date = reg[0][:5]
+    layout.ending_date = reg[-1]
+    layout.month_range = []
+    for year in range(int(layout.starting_date[:4]),int(layout.ending_date[:4])+1):
+        layout.month_range.extend([{"month":"{}/{}".format(year,i)} for i in range(1,13)])
+
     flow = []
     net_worth = []
 

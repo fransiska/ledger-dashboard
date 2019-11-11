@@ -3,7 +3,6 @@
     <head>
         <title>{{title}}</title>
         <link rel="stylesheet" type="text/css" href="/static/css/bootstrap.min.css"/>
-        <link rel="stylesheet" type="text/css" href="/static/css/bootstrap-theme.min.css"/>
         <link rel="stylesheet" type="text/css" href="https://code.jquery.com/ui/1.11.2/themes/ui-lightness/jquery-ui.css"/>
 
         <style>
@@ -18,6 +17,7 @@
                 color: #00aa00;
             }
         </style>
+	<link rel="stylesheet" type="text/css" href="/static/css/style.css"/>
     </head>
     <body>
         <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
@@ -35,7 +35,14 @@
             </div>
         </div>
 
-        <div class="container" style="padding-top: 70px;">
+	<div class="container" style="padding-top: 70px;">
+
+	  <ul class="list-group list-group-horizontal">
+	  {{#month_range}}
+	  <li class="list-group-item"><a href="/{{ &month }}">{{ month }}</a></li>
+	  {{/month_range}}
+	  </ul>
+
           <div>{{current_date}}</div>
           {{>content}}
         </div><!-- /.container -->
