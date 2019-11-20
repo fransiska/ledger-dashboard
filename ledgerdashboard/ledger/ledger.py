@@ -26,7 +26,7 @@ class Ledger:
 
     def balance(self, accounts=None, **kwargs):
 
-        pattern = re.compile("([A-Za-z0-9:]+) ([A-Z]{3}|[$€£]) *([-0-9.,]+)")
+        pattern = re.compile("([A-Za-z0-9:-]+) ([A-Z]{3}|[$€£]) *([-0-9.,]+)")
         balance_output = self._command(
             command="balance",
             accounts=accounts,
