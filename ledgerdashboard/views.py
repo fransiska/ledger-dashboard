@@ -32,12 +32,12 @@ def index(date = None):
 
     layout.accounts = [
         {"name": format_account(account), 'balance': format_amount(balance,10)}
-        for account, cur, balance in l.balance(accounts=s.Accounts.ASSETS_PATTERN, limit="date <= [{}]".format(next_month.strftime("%B")))
+        for account, cur, balance in l.balance(accounts=s.Accounts.ASSETS_PATTERN, limit="date <= [{}]".format(next_month.strftime("%B %Y")))
     ]
 
     layout.debts = [
         {"name": format_account(account), 'balance': format_amount(float(balance) * -1,10)}
-        for account, cur, balance in l.balance(accounts=s.Accounts.LIABILITIES_PATTERN, limit="date <= [{}]".format(next_month.strftime("%B")))
+        for account, cur, balance in l.balance(accounts=s.Accounts.LIABILITIES_PATTERN, limit="date <= [{}]".format(next_month.strftime("%B %Y")))
     ]
 
     layout.budget_balances = [
