@@ -95,16 +95,13 @@ def index(date = None):
     flow = []
     net_worth = []
 
-    for i in range(current_month - 3, current_month + 1):
-        start_year = end_year = layout.current_date.year
-        start_month_nr = i % 12
-        end_month_nr = (i + 1) % 12
-
-
-        if i < 1:
-            start_year -= 1
-        if i > 11:
-            end_year += 1
+    for i in range(-3,1,1):
+        start_month = layout.current_datetime + relativedelta(months=i)
+        end_month = layout.current_datetime + relativedelta(months=i+1)
+        start_month_nr = start_month.month
+        start_year = start_month.year
+        end_month_nr = end_month.month
+        end_year = end_month.year
 
         result = [
             {
