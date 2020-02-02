@@ -9,7 +9,7 @@ import ledgerdashboard.settings as s
 from flask import flash, request
 from pprint import pprint
 
-months = ["december", "january", "february", "march", "april", "may", "june",
+months = ["january", "february", "march", "april", "may", "june",
           "july", "august", "september", "october", "november", "december"]
 
 renderer = LayoutRenderer()
@@ -32,12 +32,12 @@ def index(date = None):
 
     layout.accounts = [
         {"name": format_account(account), 'balance': format_amount(balance,10)}
-        for account, cur, balance in l.balance(accounts=s.Accounts.ASSETS_PATTERN, limit="date <= [{}]".format(next_month.strftime("%B %Y")))
+        for account, cur, balance in l.balance(accounts=s.Accounts.ASSETS_PATTERN, limit="date < [{}]".format(next_month.strftime("%B %Y")))
     ]
 
     layout.debts = [
         {"name": format_account(account), 'balance': format_amount(float(balance) * -1,10)}
-        for account, cur, balance in l.balance(accounts=s.Accounts.LIABILITIES_PATTERN, limit="date <= [{}]".format(next_month.strftime("%B %Y")))
+        for account, cur, balance in l.balance(accounts=s.Accounts.LIABILITIES_PATTERN, limit="date < [{}]".format(next_month.strftime("%B %Y")))
     ]
 
     layout.budget_balances = [
@@ -98,9 +98,9 @@ def index(date = None):
     for i in range(-3,1,1):
         start_month = layout.current_datetime + relativedelta(months=i)
         end_month = layout.current_datetime + relativedelta(months=i+1)
-        start_month_nr = start_month.month
+        start_month_nr = start_month.month-1
         start_year = start_month.year
-        end_month_nr = end_month.month
+        end_month_nr = end_month.month-1
         end_year = end_month.year
 
         result = [
