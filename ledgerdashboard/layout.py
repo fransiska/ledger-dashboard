@@ -63,3 +63,17 @@ class Expenses(Layout):
     def today():
         from datetime import date
         return date.today().strftime("%Y-%m-%d")
+
+class NetWorthLayout(Layout):
+    def __init__(self):
+        self.assets = []
+        self.liabilities = []
+        self.networth = []
+        super().__init__()
+
+class CashFlowLayout(Layout):
+    def __init__(self):
+        self.incomes = []
+        self.expenses = []
+        self.cashflow = []
+        super().__init__()

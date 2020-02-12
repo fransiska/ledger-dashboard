@@ -1,0 +1,22 @@
+<ul class="list-group list-group-horizontal">
+{{#year_range}}
+<li class="list-group-item"><a href="/{{ &year }}">{{ year }}</a></li>
+{{/year_range}}
+</ul>
+
+<h2>Net worth of year {{year}}</h2>
+<table id="networth" class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Month</th>
+            <th>Amount</th>
+        </tr>
+    </thead>
+    {{#networth}}
+        <tr>
+            <td>{{month}}</td>
+            <td class="amount {{type}}">{{amount}}</td>
+        </tr>
+    {{/networth}}
+</table>
+

@@ -1,2 +1,4 @@
 data
 ledgerdashboard/settings.py
+*~
+*.pyc

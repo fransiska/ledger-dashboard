@@ -29,21 +29,14 @@
                 <div class="collapse navbar-collapse">
                     <ul class="nav navbar-nav">
                         <li class="{{dashboard}}"><a href="/">Home</a></li>
-                        <li class="{{expenses}}"><a href="/expenses">Expenses</a></li>
+                        <li class="{{networth}}"><a href="/networth">Net Worth</a></li>
+                        <li class="{{cashflow}}"><a href="/cashflow">Cash Flow</a></li>
                     </ul>
                 </div><!--/.nav-collapse -->
             </div>
         </div>
 
 	<div class="container" style="padding-top: 70px;">
-
-	  <ul class="list-group list-group-horizontal">
-	  {{#month_range}}
-	  <li class="list-group-item"><a href="/{{ &month }}">{{ month }}</a></li>
-	  {{/month_range}}
-	  </ul>
-
-          <div>{{current_date}}</div>
           {{>content}}
         </div><!-- /.container -->
 

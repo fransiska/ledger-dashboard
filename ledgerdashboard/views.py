@@ -3,7 +3,7 @@ from dateutil.relativedelta import *
 from ledgerdashboard import app
 from ledgerdashboard.ledger import ledger
 from ledgerdashboard.renderer import LayoutRenderer
-from ledgerdashboard.layout import Dashboard, Expenses
+from ledgerdashboard.layout import Dashboard, Expenses, CashFlowLayout, NetWorthLayout
 from ledgerdashboard import settings
 import ledgerdashboard.settings as s
 from flask import flash, request
@@ -140,6 +140,77 @@ def index(date = None):
 
     return renderer.render(layout)
 
+@app.route("/networth/<int:year>")
+def networth_date(year,*args):
+    return networth_get(year)
+
+@app.route("/networth", methods=['GET'])
+def networth_get(year = None):
+    layout = NetWorthLayout()
+    layout.year = year if year else datetime.date.today().year
+
+    for i in range(1,13):
+        start_date = datetime.date(layout.year, i, 1)
+        end_date = start_date + relativedelta(months=1)
+
+        start_month = start_date.month-1
+        start_year = start_date.year
+        end_month = end_date.month-1
+        end_year = end_date.year
+
+        result = [
+            {
+                "name": format_account(account),
+                'balance': format_amount(balance,9),
+                "first": account == s.Accounts.INCOME_PATTERN
+            }
+            for account, cur, balance
+            in l.balance(accounts=" ".join([s.Accounts.LIABILITIES_PATTERN, s.Accounts.ASSETS_PATTERN,"-n"]), limit="date < [{} {}]".format(months[end_month], end_year))
+        ]
+
+        amount = sum([int(res["balance"].split()[1].replace(",","")) for res in result])
+        layout.networth.append({
+            'month': months[start_month],
+            'amount': format_amount(amount),
+            'type': "negative" if amount < 0 else "positive"
+        })
+
+    return renderer.render(layout)
+
+@app.route("/cashflow/<int:year>")
+def cashflow_date(year,*args):
+    return cashflow_get(year)
+
+@app.route("/cashflow", methods=['GET'])
+def cashflow_get(year = None):
+    layout = CashFlowLayout()
+    layout.year = year if year else datetime.date.today().year
+
+    for i in range(1,13):
+        start_date = datetime.date(layout.year, i, 1)
+        end_date = start_date + relativedelta(months=1)
+
+        start_month = start_date.month-1
+        start_year = start_date.year
+        end_month = end_date.month-1
+        end_year = end_date.year
+
+        result = l.register(
+            accounts=" ".join([s.Accounts.EXPENSES_PATTERN, s.Accounts.INCOME_PATTERN]),
+            M=True, collapse=True,
+            limit="date >= [{} {}] and date < [{} {}]".format(
+                months[start_month], start_year,
+                months[end_month], end_year)
+        )
+
+        amount = float(result[0]['amount']) * -1 if len(result) > 0 else 0
+        layout.cashflow.append({
+            'month': months[start_month],
+            'amount': format_amount(amount),
+            'type': "negative" if amount < 0 else "positive"
+        })
+
+    return renderer.render(layout)
 
 @app.route("/expenses", methods=['GET'])
 def expenses_get():
