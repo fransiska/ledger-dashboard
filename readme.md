@@ -32,3 +32,6 @@ Simple dashboard for the command line accounting tool [ledger][0] written in pyt
 
 [0]:http://ledger-cli.org/
 
+# Mac OS X Catalina
+
+Run with `export FLASK_APP=runserver.py && python3 -m flask run`

@@ -2,3 +2,4 @@ data
 ledgerdashboard/settings.py
 *~
 *.pyc
+.DS_STORE
